@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no">
+  <title>交大有思-同桌打卡</title>
+  <link rel="stylesheet" href="https://cdn.bootcss.com/normalize/8.0.0/normalize.min.css" type="text/css">
+  <link rel="stylesheet" href="/static/bootstrap.css" type="text/css">
+</head>
+
+<body style="max-width:500px;margin: 5px auto;height: 100%">
+  <div class="container lead" id="main">
+    <div class="lead" id="waiting">请稍等，正在为您匹配同桌<span id="dot">...</span></div>
+    <div id="object_id" hidden>{{object_id}}</div>
+    <div id="sex" hidden>{{sex}}</div>
+    <div id="score" hidden>{{score}}</div>
+  </div>
+  <noscript>请启用Javascript</noscript>
+  <script src="/static/jQuery.js"></script>
+  <script src="/static/match.js"></script>
+</body>
+
+</html>
