@@ -13,6 +13,10 @@
 <body style="max-width:500px;margin: 5px auto;height: 100%">
   <div class="container">
     <img src="../static/1.gif" alt="Youth" class="img-fluid">
+    <div class="text-right">
+      <a href="/toquery" class="small">已报名？点击查看同桌</a>
+    </div>
+    
     <form action="/todos" method="POST" id="form">
       {% csrf_token %}
       <h2 class="text-center">交大有思·同桌打卡</h2>
@@ -40,9 +44,9 @@
         <input class="form-control" type="tel" name="phone" id="phone">
       </div>
       <div class="form-group">
-          <label for="qq">QQ号码/微信号码</label>
-          <input class="form-control" type="text" name="qq" id="qq">
-        </div>
+        <label for="qq">QQ号码/微信号码</label>
+        <input class="form-control" type="text" name="qq" id="qq">
+      </div>
 
       <div class="form-group">
         <p>第一题：下列标签中，你觉得最符合自己的是</p>
@@ -150,7 +154,15 @@
         </div>
       </div>
       <p>温馨提示</p>
-      <small>本次活动预计男生女生各250人，人太多的话可能会匹配到同性同桌哦</small>
+      <p>
+        <small>1.请填写真实信息，报名后会自动匹配同桌哦</small>
+      </p>
+      <p>
+        <small>2.只有你的同桌一人能看到你的基本信息，并且手机号码将被隐藏，请放心填写</small>
+      </p>
+      <p>
+        <small>3.本次活动预计男生女生各250人，人太多的话可能会匹配到同性同桌哦</small>
+      </p>
       <div class="form-group text-center" style="margin-top:2rem">
         <button type="submit" id="submit" class="btn btn-primary">提交</button>
         <button type="reset" id="reset" class="btn btn-danger">重置</button>

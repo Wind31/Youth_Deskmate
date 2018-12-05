@@ -21,6 +21,8 @@ class Info(Object):
 def index(request):
     return render(request, 'index.html', {})
 
+def toquery(request):
+    return render(request, 'main_query.html', {})
 
 def submit(request):
     name = request.POST.get('name')
@@ -124,6 +126,7 @@ def match(request):
             q=Query.and_(q1,q2)
             q.limit(1000)
             q.select('score')
+            q.add_ascending('createdAt')
             query_list=q.find()
             print len(query_list)
             if len(query_list)>0:
@@ -170,6 +173,47 @@ def match(request):
     except :
         res_dict={'res':False,'rate':None,'name': None,'id':None,'sex':None,'qq':None}
         return HttpResponse(json.dumps(res_dict))
+
+
+def query(request):
+    name = request.POST.get('name')
+    if not name:
+        return render(request, 'main_query.html', {})
+    phone = request.POST.get('phone')
+    info_id = request.POST.get('id')
+    q1=Query('Info')
+    q2=Query('Info')
+    q3=Query('Info')
+    q1.equal_to('id',info_id)
+    q2.equal_to('name',name)
+    q3.equal_to('phone',phone)
+    q=Query.and_(q1,q2,q3)
+    query_list=q.find()
+    if len(query_list)<=0:
+        return render(request, 'fail.html', {'msg':'没有找到你的信息，请确认是否填写正确，或许你还没有报名哦'})
+    else:
+        p1=query_list[0]
+        isMatch=p1.get('match')
+        if not isMatch:
+            return render(request, 'nodeskmate.html', {'s_name':name,'s_id':info_id})
+        else:
+            match_object_id=p1.get('matchObject')
+            q4=Query('Info')
+            p2=q4.get(match_object_id)
+            score1=p1.get('score')
+            score2=p2.get('score')
+            count=abs(score1-score2)
+            match_rate=str(round((64-count)/64.0*100,2))+'%'
+            match_name=p2.get('name')
+            match_id=p2.get('id')
+            match_sex=p2.get('sex')
+            if(match_sex=='male'):
+                match_sex='男'
+            elif(match_sex=='female'):
+                match_sex='女'
+            match_qq=p2.get('qq')
+            return render(request, 'select.html', {'s_name':name,'s_id':info_id,'rate':match_rate,'name':match_name,'id':match_id,'sex':match_sex,'qq':match_qq})
+
 
 # def query(request):
 #     q=Query('Info')

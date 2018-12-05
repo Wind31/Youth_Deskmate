@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>交大有思-同桌打卡</title>
+    <link href="https://cdn.bootcss.com/normalize/8.0.0/normalize.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="../static/bootstrap.css" type="text/css">
+</head>
+
+<body style="max-width:500px;margin: 5px auto;height: 100%">
+    <div class="container">
+        <img src="../static/1.gif" alt="Youth" class="img-fluid">
+        <form action="/query" method="POST" id="form">
+            {% csrf_token %}
+            <h2 class="text-center">交大有思·同桌打卡</h2>
+            <div class="form-group">
+                <label for="name">姓名</label>
+                <input class="form-control" type="text" name="name" id="name">
+            </div>
+            <div class="form-group">
+                <label for="id">学号</label>
+                <input class="form-control" type="text" name="id" id="id">
+            </div>
+            <div class="form-group">
+                <label for="phone">手机号码</label>
+                <input class="form-control" type="tel" name="phone" id="phone">
+            </div>
+            <p>温馨提示</p>
+            <p>
+                <small>正确填写所有信息才能查询成功哦</small>
+            </p>
+            <div class="form-group text-center" style="margin-top:2rem">
+                <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                <button type="reset" id="reset" class="btn btn-danger">重置</button>
+            </div>
+        </form>
+        <footer class="small text-center">©交大有思·实验室</footer>
+    </div>
+    <script src="/static/main_query.js"></script>
+</body>
+
+</html>
