@@ -35,13 +35,15 @@ $(document).ready(function () {
                 var txt3 = '<div>学号：<span>' + id + '</span></div>';
                 var txt4 = '<div>性别：<span>' + sex + '</span></div>';
                 var txt5 = '<div>QQ或者微信号码：<span>' + qq + '</span></div>';
-                var tips = '<div>请用微信扫描二维码加入有思同桌打卡群聊</div>'
-                var img = '<img src="/static/sc.png">';
+                var tips = '<div>请用微信扫描二维码加入有思同桌打卡群聊</div>';
+                var img = '<img src="../static/qc.png" class="img-responsive img-rounded">';
                 $('#main').append(txt1,txt,txt2,txt3,txt4,txt5,tips,img);
             }
             else{
                 var txt6 = '<div>匹配失败，暂时没有合适的人选，请等待后续匹配成功后，重新进入报名页面查看匹配结果</div>';
-                $('#main').append(txt6);
+                var tips = '<div>请用微信扫描二维码加入有思同桌打卡群聊</div>';
+                var img = '<img src="../static/qc.png" class="img-responsive img-rounded">';
+                $('#main').append(txt6,tips,img);
             }
             clearInterval(wait);
             $('#waiting').attr('hidden','true')

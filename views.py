@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.views import View
 from leancloud import Object
 from leancloud import Query
+from leancloud import User
 from leancloud.errors import LeanCloudError
 import json
 
@@ -17,6 +18,8 @@ import json
 class Info(Object):
     pass
 
+lastTime = 0
+firstTime = 0
 
 def index(request):
     return render(request, 'index.html', {})
@@ -54,7 +57,6 @@ def submit(request):
         score = score + 9
     elif q1=='1.6':
         score = score + 11
-    print score
 
     if q2=='2.1':
         score = score + 5
@@ -64,7 +66,6 @@ def submit(request):
         score = score + 15
     elif q2=='2.4':
         score = score + 20
-    print score
 
     if q3=='3.1':
         score = score + 10
@@ -74,7 +75,6 @@ def submit(request):
         score = score + 30
     elif q3=='3.4':
         score = score + 40
-    print score
 
     if q4=='4.1':
         score = score - 3
@@ -84,7 +84,6 @@ def submit(request):
         score = score - 9
     elif q4=='4.4':
         score = score - 12
-    print score 
     
     info = Info()
     info.set('name',name)
@@ -113,11 +112,9 @@ def match(request):
             object_id=content['object_id']
             sex=content['sex']
             score=content['score']
-            print score
             q1=Query('Info')
             q2=Query('Info')
             q1.equal_to('match',False)
-            print sex
             if sex=='male':
                 sex='female'
             else:
@@ -128,7 +125,6 @@ def match(request):
             q.select('score')
             q.add_ascending('createdAt')
             query_list=q.find()
-            print len(query_list)
             if len(query_list)>0:
                 count = 10000
                 match_id = 0 
@@ -215,39 +211,183 @@ def query(request):
             return render(request, 'select.html', {'s_name':name,'s_id':info_id,'rate':match_rate,'name':match_name,'id':match_id,'sex':match_sex,'qq':match_qq})
 
 
-# def query(request):
-#     q=Query('Info')
-#     res_list=q.find()
-#     res=[]
-#     count=0
-#     for i in res_list:
-#         count=count+1
-#         info={
-#             'no':count,
-#             'name':i.get('name'),
-#             'sex':i.get('sex'),
-#             'phone':i.get('phone'),
-#             'id':i.get('id'),
-#             'q1':i.get('q1'),
-#             'q2':i.get('q2'),
-#             'q3':i.get('q3'),
-#             'q4':i.get('q4'),
-#         }
-#         print info
-#         res.append(info)
-#     return render(request, 'query.html', {'infos':res})
+def nextpage(request):
+    current_user=User.get_current()
+    if not current_user:
+        return HttpResponseRedirect('/login/')
+    q=Query('Info')
+    q.add_descending('createdAt')
+    global lastTime
+    global firstTime
+    q.less_than('createdAt',lastTime)
+    q.limit(20)
+    res_list=q.find()
+    if len(res_list)<=0:
+        res_dict={'res':None,'success':False}
+        return HttpResponse(json.dumps(res_dict))
+    firstTime=res_list[0].get('createdAt')
+    lastTime=res_list[-1].get('createdAt')
+    res=[]
+    count=0
+    for i in res_list:
+            count=count+1
+            isMatch=i.get('match')
+            matchid='None'
+            matchname='None'
+            if isMatch:
+                p=q.get(i.get('matchObject'))
+                matchid=p.get('id')
+                matchname=p.get('name')
+            info={
+                'no':count,
+                'name':i.get('name'),
+                'sex':i.get('sex'),
+                'phone':i.get('phone'),
+                'id':i.get('id'),
+                'match':isMatch,
+                'matchid':matchid,
+                'matchname':matchname,
+                'time':str(i.get('createdAt')),
+                'objectid':i.id
+            }
+            res.append(info)
+    res_dict={'res':res,'success':True}
+    return HttpResponse(json.dumps(res_dict))
+    
+def lastpage(request):
+    current_user=User.get_current()
+    if not current_user:
+        return HttpResponseRedirect('/login/')
+    q=Query('Info')
+    q.add_descending('createdAt')
+    global lastTime
+    global firstTime
+    q.greater_than('createdAt',firstTime)
+    q.limit(20)
+    res_list=q.find()
+    if len(res_list)<=0:
+        res_dict={'res':None,'success':False}
+        return HttpResponse(json.dumps(res_dict))
+    firstTime=res_list[0].get('createdAt')
+    lastTime=res_list[-1].get('createdAt')
+    res=[]
+    count=0
+    for i in res_list:
+            count=count+1
+            isMatch=i.get('match')
+            matchid='None'
+            matchname='None'
+            if isMatch:
+                p=q.get(i.get('matchObject'))
+                matchid=p.get('id')
+                matchname=p.get('name')
+            info={
+                'no':count,
+                'name':i.get('name'),
+                'sex':i.get('sex'),
+                'phone':i.get('phone'),
+                'id':i.get('id'),
+                'match':isMatch,
+                'matchid':matchid,
+                'matchname':matchname,
+                'time':str(i.get('createdAt')),
+                'objectid':i.id
+            }
+            res.append(info)
+    res_dict={'res':res,'success':True}
+    return HttpResponse(json.dumps(res_dict))
 
-# def update(request):
-#     if request.method=='GET':
-#         json_data = request.GET['data']
-#         content=json.loads(json_data)
-#         zero=content['zero']
-#         print zero
-#         # sex=content[1]['sex']
-#         # one=content[2]['one']
-#         # two=content[3]['two']
-#         # three=content[4]['three']
-#         # four=content[5]['four']
-#         #如果数据库中不存在用户名
-#         alert_dic={'alert_info':'hello'}
-#         return HttpResponse(json.dumps(alert_dic))
+
+def innerquery(request):
+    current_user=User.get_current()
+    if not current_user:
+        print '未登录'
+        return HttpResponseRedirect('/login/')
+    q=Query('Info')
+    q.limit(1000)
+    thesum=q.count()
+    q.add_descending('createdAt')
+    q.limit(20)
+    res_list=q.find()
+    global lastTime
+    lastTime=res_list[-1].get('createdAt')
+    res=[]
+    count=0
+    for i in res_list:
+        count=count+1
+        isMatch=i.get('match')
+        matchid='None'
+        matchname='None'
+        if isMatch:
+            p=q.get(i.get('matchObject'))
+            matchid=p.get('id')
+            matchname=p.get('name')
+        info={
+            'no':count,
+            'name':i.get('name'),
+            'sex':i.get('sex'),
+            'phone':i.get('phone'),
+            'id':i.get('id'),
+            'match':isMatch,
+            'matchid':matchid,
+            'matchname':matchname,
+            'time':str(i.get('createdAt')),
+            'objectid':i.id
+        }
+        res.append(info)
+    return render(request, 'inner_query.html', {'infos':res,'sum':thesum})
+
+def innerdelete(request):
+    current_user=User.get_current()
+    if not current_user:
+        return HttpResponseRedirect('/login/')
+    if request.method=='GET':
+        json_data = request.GET['data']
+        content=json.loads(json_data)
+        objectid=content['objectid']
+        if not objectid:
+            return HttpResponse("no data")
+        q=Query('Info')
+        p1=q.get(objectid)
+        if p1.get('match'):
+            p2=q.get(p1.get('matchObject'))
+            p2.set('match',False)
+            p2.set('matchObject','None')
+            try:
+                p2.save()
+            except:
+                res={
+                    'result':False,
+                    'message':'系统异常，删除失败'
+                }
+                return HttpResponse(json.dumps(res))
+        try:
+            p1.destroy()
+            res={
+                    'result':True,
+                    'message':'删除成功'
+                }
+            return HttpResponse(json.dumps(res))
+            
+        except:
+                res={
+                    'result':False,
+                    'message':'系统异常，删除失败'
+                }
+                return HttpResponse(json.dumps(res))
+
+def login(request):
+    current_user=User.get_current()
+    if current_user:
+        current_user.logout()
+    pwd = request.POST.get('pwd')
+    if not pwd:
+        return render(request, 'login.html',{})
+    user=User()
+    try:
+        user.login('Youth',pwd)    
+    except:
+        return render(request, 'fail.html',{'msg':'密码错误'})
+    current_user=User.get_current()
+    if current_user is not None:
+        return HttpResponseRedirect('/innerquery/')

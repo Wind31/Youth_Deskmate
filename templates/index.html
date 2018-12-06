@@ -16,7 +16,7 @@
     <div class="text-right">
       <a href="/toquery" class="small">已报名？点击查看同桌</a>
     </div>
-    
+
     <form action="/todos" method="POST" id="form">
       {% csrf_token %}
       <h2 class="text-center">交大有思·同桌打卡</h2>
@@ -162,6 +162,12 @@
       </p>
       <p>
         <small>3.本次活动预计男生女生各250人，人太多的话可能会匹配到同性同桌哦</small>
+      </p>
+      <p>
+        <small>4.请用微信扫描二维码加入同桌打卡群聊</small>
+        <div>
+          <img src="../static/qc.png" alt="" class="img-responsive img-rounded" style="max-width:30%;max-height:30%">
+        </div>
       </p>
       <div class="form-group text-center" style="margin-top:2rem">
         <button type="submit" id="submit" class="btn btn-primary">提交</button>

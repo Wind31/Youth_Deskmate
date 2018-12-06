@@ -19,7 +19,7 @@ PORT = int(os.environ['LC_APP_PORT'])
 
 leancloud.init(APP_ID, master_key=MASTER_KEY)
 
-application = engine
+application = leancloud.engine.CookieSessionMiddleware(engine, secret=MASTER_KEY)
 
 
 if __name__ == '__main__':
