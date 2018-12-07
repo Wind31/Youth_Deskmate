@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^innerdelete/?$', views.innerdelete),
     url(r'^login/?$', views.login),
     url(r'^next/?$', views.nextpage),
-    url(r'^last/?$', views.lastpage),
+    #url(r'^last/?$', views.lastpage),
+    url(r'^specificquery/?$', views.specificquery),
     url(r'^static/(?P<path>.*)$', static.serve, {'document_root': 'static'}),
 ]

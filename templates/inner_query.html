@@ -7,11 +7,27 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>交大有思-同桌打卡</title>
     <link href="https://cdn.bootcss.com/normalize/8.0.0/normalize.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/static/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="../static/bootstrap.css" type="text/css">
 </head>
 
 <body style="width:100%;height:100%;margin:20px auto">
     <div class="container">
+        <p>特定条件查找</p>
+        <div>
+            <p>
+                <label for="name">姓名</label>
+                <input class="form-control" type="text" name="name" id="name" placeholder="姓名">
+                <button id="byname" class="btn btn-primary">根据姓名查找</button>
+            </p>
+            <p>
+                <label for="id">学号</label>
+                <input class="form-control" type="text" name="id" id="id" placeholder="学号">
+                <button id="byid" class="btn btn-primary">根据学号查找</button>
+            </p>
+        </div>
+
+        <table class="table table-striped" id="table3">
+        </table>
         <div>总共有{{sum}}条数据</div>
         <table class="table table-striped" id="table">
             <tr>
@@ -26,21 +42,22 @@
                 <th>报名时间</th>
                 <th>操作</th>
             </tr>
-                {%for i in infos%}
-                <tr class="{{i.objectid}}">
-                    <td>{{i.no}}</td>
-                    <td>{{i.name}}</td>
-                    <td>{{i.id}}</td>
-                    <td>{{i.sex}}</td>
-                    <td>{{i.phone}}</td>
-                    <td>{{i.match}}</td>
-                    <td>{{i.matchid}}</td>
-                    <td>{{i.matchname}}</td>
-                    <td>{{i.time}}</td>
-                    <td><button class="btn btn-danger delete" id="{{i.objectid}}" name="{{i.name}}">删除并重置其匹配对象</button></td>
-                </tr>
-                {%endfor%}
+            {%for i in infos%}
+            <tr class="{{i.objectid}}">
+                <td>{{i.no}}</td>
+                <td>{{i.name}}</td>
+                <td>{{i.id}}</td>
+                <td>{{i.sex}}</td>
+                <td>{{i.phone}}</td>
+                <td>{{i.match}}</td>
+                <td>{{i.matchid}}</td>
+                <td>{{i.matchname}}</td>
+                <td>{{i.time}}</td>
+                <td><button class="btn btn-danger delete" id="{{i.objectid}}" name="{{i.name}}">删除并重置其匹配对象</button></td>
+            </tr>
+            {%endfor%}
         </table>
+        <table class="table table-striped" id="table2"></table>
     </div>
     <div class="form-group text-center" style="margin-top:2rem">
         <button id="last" class="btn btn-primary">上一页</button>
@@ -49,7 +66,7 @@
     <footer class="small text-center">©交大有思·实验室</footer>
     </div>
 </body>
-<script src="/static/jQuery.js"></script>
-<script src="/static/innerquery.js"></script>
+<script src="../static/jQuery.js"></script>
+<script src="../static/innerquery.js"></script>
 
 </html>

@@ -20,7 +20,7 @@ class Info(Object):
 
 lastTime = 0
 firstTime = 0
-
+count = 0
 def index(request):
     return render(request, 'index.html', {})
 
@@ -228,9 +228,9 @@ def nextpage(request):
     firstTime=res_list[0].get('createdAt')
     lastTime=res_list[-1].get('createdAt')
     res=[]
-    count=0
+    global count
     for i in res_list:
-            count=count+1
+            count=count-1
             isMatch=i.get('match')
             matchid='None'
             matchname='None'
@@ -254,54 +254,53 @@ def nextpage(request):
     res_dict={'res':res,'success':True}
     return HttpResponse(json.dumps(res_dict))
     
-def lastpage(request):
-    current_user=User.get_current()
-    if not current_user:
-        return HttpResponseRedirect('/login/')
-    q=Query('Info')
-    q.add_descending('createdAt')
-    global lastTime
-    global firstTime
-    q.greater_than('createdAt',firstTime)
-    q.limit(20)
-    res_list=q.find()
-    if len(res_list)<=0:
-        res_dict={'res':None,'success':False}
-        return HttpResponse(json.dumps(res_dict))
-    firstTime=res_list[0].get('createdAt')
-    lastTime=res_list[-1].get('createdAt')
-    res=[]
-    count=0
-    for i in res_list:
-            count=count+1
-            isMatch=i.get('match')
-            matchid='None'
-            matchname='None'
-            if isMatch:
-                p=q.get(i.get('matchObject'))
-                matchid=p.get('id')
-                matchname=p.get('name')
-            info={
-                'no':count,
-                'name':i.get('name'),
-                'sex':i.get('sex'),
-                'phone':i.get('phone'),
-                'id':i.get('id'),
-                'match':isMatch,
-                'matchid':matchid,
-                'matchname':matchname,
-                'time':str(i.get('createdAt')),
-                'objectid':i.id
-            }
-            res.append(info)
-    res_dict={'res':res,'success':True}
-    return HttpResponse(json.dumps(res_dict))
+# def lastpage(request):
+#     current_user=User.get_current()
+#     if not current_user:
+#         return HttpResponseRedirect('/login/')
+#     q=Query('Info')
+#     q.add_descending('createdAt')
+#     global lastTime
+#     global firstTime
+#     q.greater_than('createdAt',firstTime)
+#     q.limit(20)
+#     res_list=q.find()
+#     if len(res_list)<=0:
+#         res_dict={'res':None,'success':False}
+#         return HttpResponse(json.dumps(res_dict))
+#     firstTime=res_list[0].get('createdAt')
+#     lastTime=res_list[-1].get('createdAt')
+#     res=[]
+#     count=0
+#     for i in res_list:
+#             count=count+1
+#             isMatch=i.get('match')
+#             matchid='None'
+#             matchname='None'
+#             if isMatch:
+#                 p=q.get(i.get('matchObject'))
+#                 matchid=p.get('id')
+#                 matchname=p.get('name')
+#             info={
+#                 'no':count,
+#                 'name':i.get('name'),
+#                 'sex':i.get('sex'),
+#                 'phone':i.get('phone'),
+#                 'id':i.get('id'),
+#                 'match':isMatch,
+#                 'matchid':matchid,
+#                 'matchname':matchname,
+#                 'time':str(i.get('createdAt')),
+#                 'objectid':i.id
+#             }
+#             res.append(info)
+#     res_dict={'res':res,'success':True}
+#     return HttpResponse(json.dumps(res_dict))
 
 
 def innerquery(request):
     current_user=User.get_current()
     if not current_user:
-        print '未登录'
         return HttpResponseRedirect('/login/')
     q=Query('Info')
     q.limit(1000)
@@ -312,9 +311,10 @@ def innerquery(request):
     global lastTime
     lastTime=res_list[-1].get('createdAt')
     res=[]
-    count=0
+    global count
+    count=thesum+1
     for i in res_list:
-        count=count+1
+        count=count-1
         isMatch=i.get('match')
         matchid='None'
         matchname='None'
@@ -391,3 +391,49 @@ def login(request):
     current_user=User.get_current()
     if current_user is not None:
         return HttpResponseRedirect('/innerquery/')
+
+def specificquery(request):
+    current_user=User.get_current()
+    if not current_user:
+        return HttpResponseRedirect('/login/')
+    if request.method=='GET':
+        json_data = request.GET['data']
+        content=json.loads(json_data)
+        queryType=content['type']
+        q=Query('Info')
+        if queryType==1:
+            name=content['name']
+            q.equal_to('name',name)
+        else:
+            objId=content['id']
+            q.equal_to('id',objId)
+        result=q.find()
+        if len(result)<=0:
+            res_dict={'result':None,'success':False}
+            return HttpResponse(json.dumps(res_dict))
+        res_list=[]
+        count=0
+        for i in result:
+            count=count+1
+            isMatch=i.get('match')
+            matchid='None'
+            matchname='None'
+            if isMatch:
+                p=q.get(i.get('matchObject'))
+                matchid=p.get('id')
+                matchname=p.get('name')
+            info={
+                'no':count,
+                'name':i.get('name'),
+                'sex':i.get('sex'),
+                'phone':i.get('phone'),
+                'id':i.get('id'),
+                'match':isMatch,
+                'matchid':matchid,
+                'matchname':matchname,
+                'time':str(i.get('createdAt')),
+                'objectid':i.id
+            }
+            res_list.append(info)
+        res_dict={'result':res_list,'success':True}
+    return HttpResponse(json.dumps(res_dict))
