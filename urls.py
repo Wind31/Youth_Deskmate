@@ -7,7 +7,7 @@ import views
 
 urlpatterns = [
     url(r'^$', views.index),
-    url(r'^todos/?$', views.submit),
+    #url(r'^todos/?$', views.submit),
     url(r'^match/?$', views.match),
     url(r'^query/?$', views.query),
     url(r'^toquery/?$', views.toquery),
